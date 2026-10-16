@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1d2a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Word Tanks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ TANK SELECT ============ -->
+<section id="screen-select" class="screen active">
+  <header class="brand">
+    <h1>WORD<span>TANKS</span></h1>
+    <p>Spell words · Load shells · Hold the field</p>
+  </header>
+  <div class="select-layout">
+    <div class="tank-grid" id="tankGrid"></div>
+    <aside class="panel profile-panel">
+      <canvas id="tankPreview" width="300" height="300"></canvas>
+      <h2 id="previewName">Striker</h2>
+      <p id="previewDesc" class="muted"></p>
+      <label class="field">Commander name
+        <input id="nameInput" maxlength="16" autocomplete="off" placeholder="Your name">
+      </label>
+      <div class="field">Paint
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <button id="btnContinue" class="btn primary big">Deploy ▸</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ LOBBY ============ -->
+<section id="screen-lobby" class="screen">
+  <header class="topbar">
+    <div class="brand small"><h1>WORD<span>TANKS</span></h1></div>
+    <button class="profile-chip" id="lobbyProfile" title="Change tank"></button>
+  </header>
+  <div class="lobby-layout">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Active battles</h2>
+        <button id="btnCreate" class="btn primary">＋ Create battle</button>
+      </div>
+      <div id="roomList" class="room-list"></div>
+    </div>
+    <aside class="panel howto">
+      <h2>Field manual</h2>
+      <ol>
+        <li><b>Drive over letters</b> scattered across the grassland to collect them into your tray.</li>
+        <li><b>Spell a word</b> with your tiles to load shells. Longer words hit much harder:
+          <div class="dmg-table" id="dmgTable"></div></li>
+        <li><b>Grab power-ups</b> and deploy them when you need them.</li>
+        <li><b>Destroy enemy tanks.</b> Their letters spill onto the field.</li>
+      </ol>
+      <div class="controls-grid">
+        <div><h3>⌨️ Keyboard &amp; mouse</h3>
+          <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows — drive<br>
+          Mouse — aim · Click / <kbd>Space</kbd> — fire<br>
+          <kbd>Enter</kbd> — type a word, <kbd>Enter</kbd> again to load<br>
+          Click tiles to spell · Right-click a tile to drop it<br>
+          <kbd>1</kbd>–<kbd>5</kbd> — power-ups · <kbd>Tab</kbd> — scores</p></div>
+        <div><h3>📱 Touch</h3>
+          <p>Left thumb — drive stick<br>Right thumb — aim stick (drag to fire, tap to shoot)<br>
+          Tap tiles to spell · Hold a tile to drop it<br>Tap power-up slots to deploy</p></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ CREATE / SETTINGS ============ -->
+<section id="screen-create" class="screen">
+  <header class="topbar">
+    <div class="brand small"><h1>WORD<span>TANKS</span></h1></div>
+    <div class="topbar-actions">
+      <button class="btn ghost" id="btnCreateCancel">Cancel</button>
+      <button class="btn primary" id="btnCreateGo">Create battle ▸</button>
+    </div>
+  </header>
+  <div class="settings-wrap panel">
+    <h2>Battle settings</h2>
+    <div id="createForm" class="settings-form"></div>
+  </div>
+</section>
+
+<!-- ============ ROOM ============ -->
+<section id="screen-room" class="screen">
+  <header class="topbar">
+    <div class="brand small"><h1>WORD<span>TANKS</span></h1></div>
+    <button class="profile-chip" id="roomProfile" title="Change tank"></button>
+  </header>
+  <div class="room-layout">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2 id="roomTitle">Room</h2><p class="muted" id="roomSub"></p></div>
+        <div class="row-gap">
+          <button class="btn ghost" id="btnLeaveRoom">Leave</button>
+          <button class="btn primary big" id="btnStart">Start battle ▸</button>
+        </div>
+      </div>
+      <div id="roomPlayers" class="room-players"></div>
+      <p class="muted" id="roomWaitMsg"></p>
+    </div>
+    <aside class="panel">
+      <h2 id="roomSettingsTitle">Settings</h2>
+      <div id="roomForm" class="settings-form compact"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="screen-game" class="screen">
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div class="hud-tl">
+      <div class="hp-wrap"><div class="hp-bar"><div id="hpFill"></div><div id="shieldFill"></div></div><span id="hpText"></span></div>
+      <div id="fxList" class="fx-list"></div>
+    </div>
+    <div class="hud-tc">
+      <div id="matchInfo" class="match-info"></div>
+      <div id="feed" class="feed"></div>
+    </div>
+    <div class="hud-tr">
+      <div class="hud-buttons">
+        <button class="hud-btn" id="btnScores" title="Scores (Tab)">🏆</button>
+        <button class="hud-btn" id="btnMute" title="Sound">🔊</button>
+        <button class="hud-btn" id="btnMenu" title="Menu">☰</button>
+      </div>
+      <canvas id="minimap" width="180" height="180"></canvas>
+    </div>
+
+    <div class="hud-bottom">
+      <div id="ammoBar" class="ammo-bar"></div>
+      <div class="word-row">
+        <button class="tile-btn" id="btnClear" title="Clear (Esc)">✕</button>
+        <div id="wordLine" class="word-line"><span class="hint">Tap tiles to spell a word</span></div>
+        <button class="tile-btn go" id="btnSubmit" title="Load word (Enter)">✓</button>
+      </div>
+      <div id="wordInfo" class="word-info"></div>
+      <div id="tray" class="tray"></div>
+    </div>
+    <div id="inv" class="inv"></div>
+
+    <div id="stickL" class="stick"><div class="knob"></div></div>
+    <div id="stickR" class="stick aim"><div class="knob"></div></div>
+
+    <div id="deathOverlay" class="death hidden"><h2>DESTROYED</h2><p id="deathText"></p></div>
+    <div id="spellBadge" class="spell-badge hidden">⌨️ Typing — <kbd>Enter</kbd> load · <kbd>Esc</kbd> cancel</div>
+    <div id="scoreboard" class="scoreboard hidden"></div>
+  </div>
+</section>
+
+<!-- ============ MODAL / TOAST ============ -->
+<div id="modal" class="modal hidden"><div class="modal-card panel" id="modalCard"></div></div>
+<div id="toast" class="toast"></div>
+<div id="netBanner" class="net-banner hidden">Reconnecting…</div>
+
+<script src="shared.js"></script>
+<script src="art.js"></script>
+<script src="game.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
